@@ -25,9 +25,12 @@ public extension SystemIdentifier {
         case .Intellivision: return 92
         case .Lynx: return 79
         case .MAME: return 41  // Arcade Games
-        // Arcade platforms served by flycast. No distinct libretrodb platform ID wired,
-        // so reuse the Arcade/MAME id (worst case: a missed metadata match — harmless).
-        case .NAOMI, .NAOMI2, .Atomiswave: return 41
+        // Arcade boards served by flycast. libretrodb has no Naomi platform, and
+        // Atomiswave (25) has no games in it, so these search the Dreamcast
+        // platform: most Naomi/Atomiswave titles have Dreamcast ports, and iFly's
+        // lean Dreamcast-family database files all three under 99. (41, Arcade
+        // Games, matched nothing for these boards.)
+        case .NAOMI, .NAOMI2, .Atomiswave: return 99
         case .MSX2: return 63
         case .MSX: return 36
         case .MasterSystem: return 83  // Master System - Mark III
@@ -264,7 +267,7 @@ extension SystemIdentifier {
         case .Dreamcast:     return "Sega - Dreamcast"
         case .NAOMI:         return "Sega - Naomi"
         case .NAOMI2:        return "Sega - Naomi 2"
-        case .Atomiswave:    return "Sammy - Atomiswave"
+        case .Atomiswave:    return "Atomiswave"  // libretro-thumbnails folder name
         case .GameGear:      return "Sega - Game Gear"
         case .Genesis:       return "Sega - Mega Drive - Genesis"
         case .MasterSystem:  return "Sega - Master System - Mark III"

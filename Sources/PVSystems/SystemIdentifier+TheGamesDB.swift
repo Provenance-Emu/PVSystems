@@ -176,6 +176,10 @@ public extension SystemIdentifier {
         case .CPS1: return 23
         case .CPS2: return 23
         case .CPS3: return 23
+        // Naomi / Naomi 2 / Atomiswave share TheGamesDB's generic Arcade platform
+        // (no per-board IDs). Without this, artwork search scanned every console
+        // and applied PS2/Genesis box art.
+        case .NAOMI, .NAOMI2, .Atomiswave: return 23
 
 
 //        default: return nil
