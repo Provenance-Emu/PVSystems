@@ -5,13 +5,18 @@ public extension SystemIdentifier {
     /// SQLite build PVLookup reads. `0` means libretrodb has no platform for the
     /// system, and a search filtered by it finds nothing. A system must not
     /// borrow another platform's id unless its games really are filed there
-    /// (see the arcade boards below).
+    /// (see the arcade boards below); Jaguar CD is the one interim exception.
     var libretroDatabaseID: Int {
         switch self {
         case .Atari2600: return 38  // 2600
         case .Atari5200: return 77  // 5200
         case .Atari7800: return 34  // 7800
         case .AtariJaguar: return 29  // Jaguar
+        // Interim. libretro-database has had `Atari - Jaguar CD.rdb` since
+        // 2026-11-01 (libretro/libretro-super#2149), but the libretrodb build
+        // PVLookup ships is older and has no Jaguar CD platform, so 29 finds
+        // only cartridges. Give Jaguar CD its own id when a build carries it.
+        case .AtariJaguarCD: return 29
         case .AtariST: return 55  // ST
         case .C64: return 100  // Commodore 64
         case .ColecoVision: return 114
@@ -78,13 +83,11 @@ public extension SystemIdentifier {
 
         case .PC98: return 85  // NEC - PC-98
 
-        // Systems libretrodb has no platform for. Jaguar CD must not use 29:
-        // that platform holds only Jaguar cartridges. Cartridge Neo Geo must not
+        // Systems libretrodb has no platform for. Cartridge Neo Geo must not
         // use 1: that platform is Neo Geo CD.
         case
                 .AppleII,
                 .Atari8bit,
-                .AtariJaguarCD,
                 .CDi,
                 .EP128,
                 .Macintosh,
@@ -248,7 +251,9 @@ extension SystemIdentifier {
         switch self {
         // Atari Systems
         case .Atari8bit:     return "Atari - 8-bit"
-        case .AtariJaguarCD: return "Atari - Atari Jaguar" // Does not exist
+        // The name of libretro-database's rdb and of the thumbnail folder asked
+        // for in libretro-thumbnails/libretro-thumbnails#141 (not created yet).
+        case .AtariJaguarCD: return "Atari - Jaguar CD"
         case .Atari2600:     return "Atari - 2600"
         case .Atari5200:     return "Atari - 5200"
         case .Atari7800:     return "Atari - 7800"
@@ -357,7 +362,6 @@ extension SystemIdentifier {
     /// a different folder name in the cheat repo vs the thumbnails repo:
     ///
     /// - DOOM: thumbnails use "DOOM", cheat repo uses "PrBoom"
-    /// - AtariJaguarCD: thumbnails have no specific folder; cheat repo uses "Atari - Jaguar CD"
     /// - MSX/MSX2: both map to "Microsoft - MSX - MSX2 - MSX2P - MSX Turbo R" in cheat DB
     /// - Atari8bit: cheat DB uses "Atari - 8-bit Family"
     /// - MAME/CPS*: cheat DB uses "FBNeo - Arcade Games"
@@ -365,7 +369,6 @@ extension SystemIdentifier {
     public var libretroCheatSystemName: String {
         switch self {
         case .DOOM:         return "PrBoom"
-        case .AtariJaguarCD: return "Atari - Jaguar CD"
         // MSX and MSX2 share a single combined system entry in the cheat DB
         case .MSX, .MSX2:  return "Microsoft - MSX - MSX2 - MSX2P - MSX Turbo R"
         // Atari 8-bit family uses a different name in the cheat DB

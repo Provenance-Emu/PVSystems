@@ -2,11 +2,12 @@ import Testing
 @testable import PVSystems
 
 /// `libretroDatabaseID` is `platforms.id` in the libretrodb SQLite build that
-/// PVLookup reads. These pin the ids that were wrong in 1.0.0 and check every
+/// PVLookup reads. These pin the Neo Geo ids that were wrong in 1.0.0, hold
+/// Jaguar CD where it is until libretrodb ships its platform, and check every
 /// mapped id against a copy of that table.
 @Suite("libretrodb platform ids")
 struct SystemIdentifierLibretroDBTests {
-    // MARK: - The three ids that were wrong in 1.0.0
+    // MARK: - The Neo Geo ids that were wrong in 1.0.0
 
     @Test("Neo Geo CD is platform 1, in both directions")
     func neoGeoCD() {
@@ -21,11 +22,23 @@ struct SystemIdentifierLibretroDBTests {
         #expect(SystemIdentifier.NeoGeo.libretroDatabaseID == Self.unmapped)
     }
 
-    @Test("Jaguar CD does not borrow the Jaguar cartridge platform")
-    func jaguarCD() {
-        #expect(SystemIdentifier.AtariJaguarCD.libretroDatabaseID == Self.unmapped)
+    // MARK: - Jaguar CD
+
+    // Interim: the shipped libretrodb build has no Jaguar CD platform yet.
+    // When one does, this id changes and 29 leaves `sharedPlatforms`.
+    @Test("Jaguar CD searches the Jaguar platform until libretrodb ships its own")
+    func jaguarCDPlatform() {
+        #expect(SystemIdentifier.AtariJaguarCD.libretroDatabaseID == SystemIdentifier.AtariJaguar.libretroDatabaseID)
         #expect(SystemIdentifier.AtariJaguar.libretroDatabaseID == 29)
         #expect(SystemIdentifier.fromLibretroDatabaseID(29) == .AtariJaguar)
+    }
+
+    // libretro-database's rdb name, and the thumbnail folder requested in
+    // libretro-thumbnails/libretro-thumbnails#141.
+    @Test("Jaguar CD uses its own libretro folder name")
+    func jaguarCDName() {
+        #expect(SystemIdentifier.AtariJaguarCD.libretroDatabaseName == "Atari - Jaguar CD")
+        #expect(SystemIdentifier.AtariJaguarCD.libretroCheatSystemName == "Atari - Jaguar CD")
     }
 
     @Test("An unmapped id is not a system")
@@ -81,8 +94,10 @@ struct SystemIdentifierLibretroDBTests {
     static let unmapped = 0
 
     /// The platforms several systems search on purpose: the flycast arcade
-    /// boards on Dreamcast, and the Capcom boards on Arcade Games.
+    /// boards on Dreamcast, the Capcom boards on Arcade Games, and (interim)
+    /// Jaguar CD on Jaguar.
     static let sharedPlatforms: [Int: Set<SystemIdentifier>] = [
+        29: [.AtariJaguar, .AtariJaguarCD],
         41: [.MAME, .CPS1, .CPS2, .CPS3],
         99: [.Dreamcast, .NAOMI, .NAOMI2, .Atomiswave]
     ]
