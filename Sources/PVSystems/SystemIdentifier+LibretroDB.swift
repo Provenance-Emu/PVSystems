@@ -1,14 +1,17 @@
 import Foundation
 
 public extension SystemIdentifier {
-    /// LibretroDB platform ID for this system
+    /// LibretroDB platform ID for this system: `platforms.id` in the libretrodb
+    /// SQLite build PVLookup reads. `0` means libretrodb has no platform for the
+    /// system, and a search filtered by it finds nothing. A system must not
+    /// borrow another platform's id unless its games really are filed there
+    /// (see the arcade boards below).
     var libretroDatabaseID: Int {
         switch self {
         case .Atari2600: return 38  // 2600
         case .Atari5200: return 77  // 5200
         case .Atari7800: return 34  // 7800
         case .AtariJaguar: return 29  // Jaguar
-        case .AtariJaguarCD: return 29  // Using same as Jaguar since no CD-specific ID
         case .AtariST: return 55  // ST
         case .C64: return 100  // Commodore 64
         case .ColecoVision: return 114
@@ -63,8 +66,7 @@ public extension SystemIdentifier {
         case ._3DO: return 73
         case ._3DS: return 21  // Nintendo 3DS
         case .TIC80: return 26
-        case .NeoGeo: return 1
-        case .NeoGeoCD: return 136  // SNK - Neo Geo CD
+        case .NeoGeoCD: return 1  // Neo Geo CD
 //      case .Amiga: return 89
         case .Quake: return 23
         case .Quake2: return 4
@@ -76,15 +78,19 @@ public extension SystemIdentifier {
 
         case .PC98: return 85  // NEC - PC-98
 
-        // Systems we don't map (yet)
+        // Systems libretrodb has no platform for. Jaguar CD must not use 29:
+        // that platform holds only Jaguar cartridges. Cartridge Neo Geo must not
+        // use 1: that platform is Neo Geo CD.
         case
                 .AppleII,
                 .Atari8bit,
+                .AtariJaguarCD,
                 .CDi,
                 .EP128,
                 .Macintosh,
                 .MegaDuck,
                 .Music,
+                .NeoGeo,
                 .PalmOS,
                 .RetroArch,
                 .Unknown:
@@ -106,6 +112,7 @@ public extension SystemIdentifier {
         case 114: return .ColecoVision
         case 115: return .GBA          // Game Boy Advance
         case 12: return .PCECD         // PC Engine CD
+        case 1: return .NeoGeoCD       // Neo Geo CD
         case 14: return .Sega32X       // 32X
         case 15: return .Genesis       // Mega Drive
         case 20: return .PCFX
@@ -149,7 +156,6 @@ public extension SystemIdentifier {
         case 92: return .Intellivision
         case 99: return .Dreamcast
         case 9: return .NGP            // Neo Geo Pocket
-        case 136: return .NeoGeoCD    // SNK - Neo Geo CD
         // case 89: return .Amiga
         // Unsupported systems:
         case 4:  return .Quake2
