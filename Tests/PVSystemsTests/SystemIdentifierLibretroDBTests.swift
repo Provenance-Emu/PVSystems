@@ -2,8 +2,8 @@ import Testing
 @testable import PVSystems
 
 /// `libretroDatabaseID` is `platforms.id` in the libretrodb SQLite build that
-/// PVLookup reads. These pin the Neo Geo ids that were wrong in 1.0.0, hold
-/// Jaguar CD where it is until libretrodb ships its platform, and check every
+/// PVLookup reads. These pin the Neo Geo ids that were wrong in 1.0.0, give
+/// Jaguar CD the platform PVLookup's database appends for it, and check every
 /// mapped id against a copy of that table.
 @Suite("libretrodb platform ids")
 struct SystemIdentifierLibretroDBTests {
@@ -24,11 +24,11 @@ struct SystemIdentifierLibretroDBTests {
 
     // MARK: - Jaguar CD
 
-    // Interim: the shipped libretrodb build has no Jaguar CD platform yet.
-    // When one does, this id changes and 29 leaves `sharedPlatforms`.
-    @Test("Jaguar CD searches the Jaguar platform until libretrodb ships its own")
+    // 1.0.0 sent Jaguar CD to 29, the cartridge platform, which has no discs.
+    @Test("Jaguar CD is platform 120, in both directions, apart from Jaguar")
     func jaguarCDPlatform() {
-        #expect(SystemIdentifier.AtariJaguarCD.libretroDatabaseID == SystemIdentifier.AtariJaguar.libretroDatabaseID)
+        #expect(SystemIdentifier.AtariJaguarCD.libretroDatabaseID == 120)
+        #expect(SystemIdentifier.fromLibretroDatabaseID(120) == .AtariJaguarCD)
         #expect(SystemIdentifier.AtariJaguar.libretroDatabaseID == 29)
         #expect(SystemIdentifier.fromLibretroDatabaseID(29) == .AtariJaguar)
     }
@@ -94,16 +94,14 @@ struct SystemIdentifierLibretroDBTests {
     static let unmapped = 0
 
     /// The platforms several systems search on purpose: the flycast arcade
-    /// boards on Dreamcast, the Capcom boards on Arcade Games, and (interim)
-    /// Jaguar CD on Jaguar.
+    /// boards on Dreamcast and the Capcom boards on Arcade Games.
     static let sharedPlatforms: [Int: Set<SystemIdentifier>] = [
-        29: [.AtariJaguar, .AtariJaguarCD],
         41: [.MAME, .CPS1, .CPS2, .CPS3],
         99: [.Dreamcast, .NAOMI, .NAOMI2, .Atomiswave]
     ]
 
     /// `select id, name from platforms order by id` on the libretrodb in
-    /// PVLookup's `databases-2026-10-17` release.
+    /// PVLookup's `databases-2026-11-16` release.
     static let platforms: [Int: String] = [
         1: "Neo Geo CD",
         2: "Mega-CD - Sega CD",
@@ -223,6 +221,9 @@ struct SystemIdentifierLibretroDBTests {
         116: "HBMAME",
         117: "Flashback",
         118: "ScummVM",
-        119: "Plus-4"
+        119: "Plus-4",
+        // Appended by PVLookup's Tools/libretrodb/add_platform.py; not in
+        // releases before `databases-2026-11-16`.
+        120: "Jaguar CD"
     ]
 }

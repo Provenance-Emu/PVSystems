@@ -5,18 +5,17 @@ public extension SystemIdentifier {
     /// SQLite build PVLookup reads. `0` means libretrodb has no platform for the
     /// system, and a search filtered by it finds nothing. A system must not
     /// borrow another platform's id unless its games really are filed there
-    /// (see the arcade boards below); Jaguar CD is the one interim exception.
+    /// (see the arcade boards below).
     var libretroDatabaseID: Int {
         switch self {
         case .Atari2600: return 38  // 2600
         case .Atari5200: return 77  // 5200
         case .Atari7800: return 34  // 7800
         case .AtariJaguar: return 29  // Jaguar
-        // Interim. libretro-database has had `Atari - Jaguar CD.rdb` since
-        // 2026-11-01 (libretro/libretro-super#2149), but the libretrodb build
-        // PVLookup ships is older and has no Jaguar CD platform, so 29 finds
-        // only cartridges. Give Jaguar CD its own id when a build carries it.
-        case .AtariJaguarCD: return 29
+        // Appended to PVLookup's libretrodb from libretro-database's
+        // `Atari - Jaguar CD` dat (PVLookup Tools/libretrodb/add_platform.py).
+        // Releases before `databases-2026-11-16` have no platform 120.
+        case .AtariJaguarCD: return 120  // Jaguar CD
         case .AtariST: return 55  // ST
         case .C64: return 100  // Commodore 64
         case .ColecoVision: return 114
@@ -237,6 +236,7 @@ public extension SystemIdentifier {
         // case 117: Flashback
         // case 118: ScummVM
         // case 119: Plus-4
+        case 120: return .AtariJaguarCD  // Jaguar CD
 
         default: return nil
         }
