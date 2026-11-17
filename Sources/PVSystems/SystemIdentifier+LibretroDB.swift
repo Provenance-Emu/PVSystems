@@ -1,14 +1,21 @@
 import Foundation
 
 public extension SystemIdentifier {
-    /// LibretroDB platform ID for this system
+    /// LibretroDB platform ID for this system: `platforms.id` in the libretrodb
+    /// SQLite build PVLookup reads. `0` means libretrodb has no platform for the
+    /// system, and a search filtered by it finds nothing. A system must not
+    /// borrow another platform's id unless its games really are filed there
+    /// (see the arcade boards below).
     var libretroDatabaseID: Int {
         switch self {
         case .Atari2600: return 38  // 2600
         case .Atari5200: return 77  // 5200
         case .Atari7800: return 34  // 7800
         case .AtariJaguar: return 29  // Jaguar
-        case .AtariJaguarCD: return 29  // Using same as Jaguar since no CD-specific ID
+        // Appended to PVLookup's libretrodb from libretro-database's
+        // `Atari - Jaguar CD` dat (PVLookup Tools/libretrodb/add_platform.py).
+        // Releases before `databases-2026-11-16` have no platform 120.
+        case .AtariJaguarCD: return 120  // Jaguar CD
         case .AtariST: return 55  // ST
         case .C64: return 100  // Commodore 64
         case .ColecoVision: return 114
@@ -63,8 +70,7 @@ public extension SystemIdentifier {
         case ._3DO: return 73
         case ._3DS: return 21  // Nintendo 3DS
         case .TIC80: return 26
-        case .NeoGeo: return 1
-        case .NeoGeoCD: return 136  // SNK - Neo Geo CD
+        case .NeoGeoCD: return 1  // Neo Geo CD
 //      case .Amiga: return 89
         case .Quake: return 23
         case .Quake2: return 4
@@ -76,7 +82,8 @@ public extension SystemIdentifier {
 
         case .PC98: return 85  // NEC - PC-98
 
-        // Systems we don't map (yet)
+        // Systems libretrodb has no platform for. Cartridge Neo Geo must not
+        // use 1: that platform is Neo Geo CD.
         case
                 .AppleII,
                 .Atari8bit,
@@ -85,6 +92,7 @@ public extension SystemIdentifier {
                 .Macintosh,
                 .MegaDuck,
                 .Music,
+                .NeoGeo,
                 .PalmOS,
                 .RetroArch,
                 .Unknown:
@@ -106,6 +114,7 @@ public extension SystemIdentifier {
         case 114: return .ColecoVision
         case 115: return .GBA          // Game Boy Advance
         case 12: return .PCECD         // PC Engine CD
+        case 1: return .NeoGeoCD       // Neo Geo CD
         case 14: return .Sega32X       // 32X
         case 15: return .Genesis       // Mega Drive
         case 20: return .PCFX
@@ -149,7 +158,6 @@ public extension SystemIdentifier {
         case 92: return .Intellivision
         case 99: return .Dreamcast
         case 9: return .NGP            // Neo Geo Pocket
-        case 136: return .NeoGeoCD    // SNK - Neo Geo CD
         // case 89: return .Amiga
         // Unsupported systems:
         case 4:  return .Quake2
@@ -228,6 +236,7 @@ public extension SystemIdentifier {
         // case 117: Flashback
         // case 118: ScummVM
         // case 119: Plus-4
+        case 120: return .AtariJaguarCD  // Jaguar CD
 
         default: return nil
         }
@@ -242,7 +251,9 @@ extension SystemIdentifier {
         switch self {
         // Atari Systems
         case .Atari8bit:     return "Atari - 8-bit"
-        case .AtariJaguarCD: return "Atari - Atari Jaguar" // Does not exist
+        // The name of libretro-database's rdb and of the thumbnail folder asked
+        // for in libretro-thumbnails/libretro-thumbnails#141 (not created yet).
+        case .AtariJaguarCD: return "Atari - Jaguar CD"
         case .Atari2600:     return "Atari - 2600"
         case .Atari5200:     return "Atari - 5200"
         case .Atari7800:     return "Atari - 7800"
@@ -351,7 +362,6 @@ extension SystemIdentifier {
     /// a different folder name in the cheat repo vs the thumbnails repo:
     ///
     /// - DOOM: thumbnails use "DOOM", cheat repo uses "PrBoom"
-    /// - AtariJaguarCD: thumbnails have no specific folder; cheat repo uses "Atari - Jaguar CD"
     /// - MSX/MSX2: both map to "Microsoft - MSX - MSX2 - MSX2P - MSX Turbo R" in cheat DB
     /// - Atari8bit: cheat DB uses "Atari - 8-bit Family"
     /// - MAME/CPS*: cheat DB uses "FBNeo - Arcade Games"
@@ -359,7 +369,6 @@ extension SystemIdentifier {
     public var libretroCheatSystemName: String {
         switch self {
         case .DOOM:         return "PrBoom"
-        case .AtariJaguarCD: return "Atari - Jaguar CD"
         // MSX and MSX2 share a single combined system entry in the cheat DB
         case .MSX, .MSX2:  return "Microsoft - MSX - MSX2 - MSX2P - MSX Turbo R"
         // Atari 8-bit family uses a different name in the cheat DB
