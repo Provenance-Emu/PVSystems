@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum SystemIdentifier: String, CaseIterable, Codable, Sendable, Equatable, Hashable, Comparable {
+@frozen public enum SystemIdentifier: String, CaseIterable, Codable, Sendable, Equatable, Hashable, Comparable {
     case _3DO = "com.provenance.3DO"
     case _3DS = "com.provenance.3ds"
     case AppleII = "com.provenance.appleII"
