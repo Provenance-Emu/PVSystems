@@ -11,7 +11,7 @@ import CoreGraphics
 public typealias CGFloat = Double
 #endif
 
-public enum PVGameBoxArtAspectRatio: CGFloat {
+@frozen public enum PVGameBoxArtAspectRatio: CGFloat {
     case square = 1.0
     case wide = 1.45
     case tall = 0.72

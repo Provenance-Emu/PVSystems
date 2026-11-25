@@ -190,7 +190,7 @@ public struct PerGameBIOSRequirement: Sendable, Hashable, Identifiable {
 
 // MARK: - Errors
 
-public enum PerGameBIOSManifestError: Error, Equatable, CustomStringConvertible {
+@frozen public enum PerGameBIOSManifestError: Error, Equatable, CustomStringConvertible {
     case unsupportedVersion(found: Int, supported: Int)
     case unknownBIOSID(String, inGroup: String)
     case duplicateBIOSID(String)
